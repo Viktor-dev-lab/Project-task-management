@@ -3,11 +3,12 @@ const Task = require('../models/task.model.js')
 
 // Helpers
 const paginationHelpers = require("../helpers/pagination.js");
+const searchHelpers = require("../helpers/search.js");
 
 
 // [GET] api/v1/task
 module.exports.index = async (req, res) => {
-  // Tìm kiếm theo status
+  // Bộ Lọc theo status
   // api/v1/tasks?status=''
   const find = {
     deleted: false
@@ -16,22 +17,27 @@ module.exports.index = async (req, res) => {
     find.status = req.query.status;
   }
 
+  // Bộ lọc tìm kiếm
+  const objectSearch = searchHelpers(req);
+  if (objectSearch.keyword) {
+    find.title = objectSearch.title;
+  }
+
   // Phân Trang
   const countProducts = await Task.countDocuments(find); // Đếm tổng số sản phẩm
   // Chức năng phân trang
-  let Pagination = paginationHelpers(
-      {
-          currentPage: 1,
-          limitItem: 2
-      },
-      req,
-      countProducts
+  let Pagination = paginationHelpers({
+      currentPage: 1,
+      limitItem: 2
+    },
+    req,
+    countProducts
   );
 
   // Sort
   // api/v1/tasks?sortKey=''&sortValue=''
   const sort = {}
-  if (req.query.sortKey && req.query.sortValue){
+  if (req.query.sortKey && req.query.sortValue) {
     sort[req.query.sortKey] = req.query.sortValue;
   }
 
@@ -46,14 +52,14 @@ module.exports.index = async (req, res) => {
 
 // [GET] api/v1/task/detail/:id
 module.exports.detail = async (req, res) => {
-  try{
+  try {
     const id = req.params.id;
     const task = await Task.findOne({
       _id: id,
       deleted: false
     });
     res.json(task);
-  } catch(err){ 
+  } catch (err) {
     res.json("Không tìm thấy !");
   }
 }
