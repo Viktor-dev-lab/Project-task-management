@@ -1,14 +1,14 @@
 const express = require('express') 
 const router = express.Router()
 
-const Task = require('../../../models/task.model.js')
+// Controller
+const controller = require('../controllers/task.controller')
 
 // Validate
 
 // route
-router.get("/", async (req,res) => {
-  const task = await Task.find({deleted: false});
-  res.json(task)
-});
+router.get("/", controller.index);
+router.get("/detail/:id", controller.detail);
+
 
 module.exports = router
