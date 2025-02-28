@@ -14,7 +14,7 @@ app.set("views", `${__dirname}/views`); // cài đặt chế độ hiển thị 
 app.set("view engine", "pug"); // cài đặt template engine là pug
 
 app.use(express.static(`${__dirname}/public`)); // Nhúng file tĩnh có tên folder public
-// parse application/json
+// parse application/json gửi data json qua body
 app.use(bodyParser.json())
 
 // route
