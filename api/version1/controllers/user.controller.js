@@ -157,3 +157,51 @@ module.exports.forgotPassword = async (req, res) => {
     });
   }
 };
+
+// [POST] api/v1/users/password/otp
+module.exports.otpPassword = async (req, res) => {
+  try {
+    const email = req.body.email;
+    const otp = req.body.otp;
+
+    // Tìm OTP theo email
+    const otpRecord = await OTP.findOne({ email: email });
+
+    if (!otpRecord) {
+      return res.status(400).json({
+        code: 400,
+        message: "Mã OTP đã hết hạn"
+      });
+    }
+
+    const result = await OTP.findOne({email: email, otp: otp});
+    if (!result){
+      return res.status(400).json({
+        code: 400,
+        message: "OTP không hợp lệ"
+      });
+    }
+    
+    // Xóa OTP trước
+    await OTP.deleteOne({
+        email: email,
+        otp: otp
+    });
+    const user = await User.findOne({email: email});
+    const token = user.token;
+    res.cookie("token", token);
+
+    res.status(200).json({
+      code: 200,
+      message: "Xác thực thực thành công",
+      token: token
+    });
+
+  } catch (error) {
+    console.error("Lỗi xác thực:", error.message);
+    res.status(500).json({
+      success: false,
+      message: "Đã xảy ra lỗi"
+    });
+  }
+};
