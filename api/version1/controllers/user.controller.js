@@ -205,3 +205,40 @@ module.exports.otpPassword = async (req, res) => {
     });
   }
 };
+
+// [POST] api/v1/users/password/reset
+module.exports.resetPassword = async (req, res) => {
+  try {
+    const token = req.cookies.token;
+    const password = req.body.password;
+
+    const user = await User.findOne({ token});
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (isMatch) {
+      return res.status(400).json({
+        code: 400,
+        message: "Vui lòng không đổi mật khẩu như cũ"
+      });
+    }
+
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    await User.updateOne(
+      {token: token},
+      {password: hashedPassword}
+    );
+
+    res.status(200).json({
+      code: 200,
+      message: "Đổi mật khẩu thành công",
+    });
+
+  } catch (error) {
+    console.error("Lỗi đổi mật khẩu:", error.message);
+    res.status(500).json({
+      success: false,
+      message: "Đã xảy ra lỗi"
+    });
+  }
+};
