@@ -2,12 +2,13 @@ const express = require('express')
 const router = express.Router()
 
 // Controller
-const controller = require('../controllers/user.controller')
+const controller = require('../controllers/user.controller.js')
 
 // Validate
 
 // route
 router.post("/register", controller.register);
 router.post("/login", controller.login);
+router.post("/password/forgot", controller.forgotPassword);
 
 module.exports = router
