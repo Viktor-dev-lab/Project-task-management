@@ -1,4 +1,5 @@
 const taskRoutes = require('./task.route')
+const userRoutes = require('./user.route')
 
 // Address
 const systemConfig = require('../../../config/system.js');
@@ -8,5 +9,7 @@ module.exports = (app) => {
 
     // After route 
     app.use(PATH_VERSION1 + '/tasks', taskRoutes)
+    app.use(PATH_VERSION1 + '/users', userRoutes)
+
 }
 

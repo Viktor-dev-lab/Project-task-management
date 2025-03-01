@@ -2,13 +2,14 @@ const express = require('express') // thêm thư viện express
 require("dotenv").config(); // sử dụng thư viện dotenv để cấu hình các thông tin bảo mật
 const database = require("./config/database.js") // Nhúng từ bên file config cấu hình database
 const bodyParser = require('body-parser') // Thư viện lấy dữ liệu từ các biểu mẫu (forms) trong các yêu cầu HTTP.
+const cors = require("cors"); // Cho phép FE truy cập API bên BE
 
 database.connect() // gọi hàm connect để connect
 
 const app = express() // Gọi hàm express() để khởi tạo một ứng dụng Express
 const port = process.env.PORT // Cổng 3000
 const routeApi = require('./api/version1/routes/index.route.js') // Nhúng route client
-
+const cookieParser = require('cookie-parser') // Thư viện để lưu data vào cookie
 
 app.set("views", `${__dirname}/views`); // cài đặt chế độ hiển thị của pug trong thư mục views
 app.set("view engine", "pug"); // cài đặt template engine là pug
@@ -16,6 +17,8 @@ app.set("view engine", "pug"); // cài đặt template engine là pug
 app.use(express.static(`${__dirname}/public`)); // Nhúng file tĩnh có tên folder public
 // parse application/json gửi data json qua body
 app.use(bodyParser.json())
+app.use(cors());
+app.use(cookieParser('Xuandeptrai')); 
 
 // route
 routeApi(app)
