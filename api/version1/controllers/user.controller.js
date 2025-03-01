@@ -8,7 +8,7 @@ const generateHelper = require('../helpers/generate.js');
 const sendOtpHelper = require('../helpers/sendSMS.js');
 
 
-// [GET] api/v1/users/register
+// [POST] api/v1/users/register
 module.exports.register = async (req, res) => {
   try {
     const {fullName, email, phone, password} = req.body;
@@ -26,7 +26,7 @@ module.exports.register = async (req, res) => {
     await OTP.create({ phone, otp });
 
     // Gửi SMS
-    // await sendOtpHelper.sendSMS(req, res);
+    await sendOtpHelper.sendSMS(req, res);
 
     // tạo user
     const user = new User({
@@ -34,8 +34,8 @@ module.exports.register = async (req, res) => {
       email, phone, 
       password: hashedPassword
     });
-    user.save();
 
+    user.save();
     const token = user.token;
     res.cookie("token", token);
 
@@ -47,6 +47,36 @@ module.exports.register = async (req, res) => {
 
   } catch (error) {
     console.error("Lỗi đăng ký:", error.message);
+    res.status(500).json({ success: false, message: "Đã xảy ra lỗi" });
+  }
+};
+
+// [POST] api/v1/users/login
+module.exports.login = async (req, res) => {
+  try {
+    const {email, password} = req.body;
+
+    // Kiểm tra email đã tồn tại chưa
+    const user = await User.findOne({ email: email, deleted: false });
+    if (!user) {
+      return res.json({ code: 400, message: "Email không tồn tại!" });
+    }
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ success: false, message: "Mật khẩu không đúng!" });
+    }
+
+    const token = user.token;
+    res.cookie("token", token);
+
+    res.json({
+      code: 200,
+      message: "Đăng nhập thành công !",
+      token: token
+    })
+
+  } catch (error) {
+    console.error("Lỗi đăng nhập:", error.message);
     res.status(500).json({ success: false, message: "Đã xảy ra lỗi" });
   }
 };

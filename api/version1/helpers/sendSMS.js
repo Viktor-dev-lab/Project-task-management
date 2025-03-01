@@ -7,7 +7,7 @@ module.exports.sendSMS = async (req, res) => {
     const message = await client.messages.create({
       body: 'Hello from Twilio',
       to: req.body.phone, // Số điện thoại nhận tin nhắn
-      from: '+19891234567', // Số Twilio hợp lệ
+      from: '+19896834446', // Số Twilio hợp lệ
     });
 
     console.log("SMS sent:", message.sid);
