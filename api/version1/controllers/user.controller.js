@@ -242,3 +242,27 @@ module.exports.resetPassword = async (req, res) => {
     });
   }
 };
+
+// [POST] api/v1/users/detail
+module.exports.detail = async (req, res) => {
+  try {
+    const token = req.cookies.token;
+    const user = await User.findOne({ 
+      token: token,
+      deleted: false
+    }).select("-password -token");
+
+    res.status(200).json({
+      code: 200,
+      message: "Thành công",
+      info: user
+    });
+
+  } catch (error) {
+    console.error("Lỗi", error.message);
+    res.status(500).json({
+      success: false,
+      message: "Đã xảy ra lỗi"
+    });
+  }
+};
