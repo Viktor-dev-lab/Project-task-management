@@ -11,6 +11,10 @@ module.exports.index = async (req, res) => {
   // Bộ Lọc theo status
   // api/v1/tasks?status=''
   const find = {
+    $or: [
+      {createdBy: req.user.id},
+      {listUsers:{ $in: [req.user.id] }}
+    ],
     deleted: false
   }
   if (req.query.status) {
