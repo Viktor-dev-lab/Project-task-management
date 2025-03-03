@@ -7,6 +7,7 @@ const bcrypt = require("bcrypt");
 const generateHelper = require('../helpers/generate.js');
 const sendOtpHelper = require('../helpers/sendSMS.js');
 const sendMailHelper = require('../helpers/sendMail.js');
+const generate = require('../helpers/generate.js');
 
 
 // [POST] api/v1/users/register
@@ -48,7 +49,8 @@ module.exports.register = async (req, res) => {
       fullName,
       email,
       phone,
-      password: hashedPassword
+      password: hashedPassword,
+      token:  generate.generateRandomString(30)
     });
 
     user.save();
@@ -138,7 +140,7 @@ module.exports.forgotPassword = async (req, res) => {
     await OTP.create({
       email,
       otp,
-      createdAt: Date.now() + 100 // 3 phút hết hạn
+      createdAt: Date.now() + 3*60*1000 // 3 phút hết hạn
     });
 
     // Gửi Email
