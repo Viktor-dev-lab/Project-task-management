@@ -262,3 +262,23 @@ module.exports.detail = async (req, res) => {
     });
   }
 };
+
+// [POST] api/v1/users/list
+module.exports.list = async (req, res) => {
+  try {
+    const user = await User.find({deleted: false}).select("fullName email");
+
+    res.status(200).json({
+      code: 200,
+      message: "Thành công",
+      info: user
+    });
+
+  } catch (error) {
+    console.error("Lỗi", error.message);
+    res.status(500).json({
+      success: false,
+      message: "Đã xảy ra lỗi"
+    });
+  }
+};
